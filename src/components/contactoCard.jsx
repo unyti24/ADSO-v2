@@ -1,33 +1,51 @@
+// Este componente muestra un contacto individual.
+// Incluye nombre, teléfono, correo, etiqueta y el botón de eliminar.
+
 export default function ContactoCard({
   nombre,
   telefono,
   correo,
   etiqueta,
-  onEliminar
+  onEliminar,
 }) {
   return (
-    <article className="bg-white border rounded-lg shadow-sm p-4 mb-4">
-      <h3 className="text-lg font-semibold text-morado-oscuro">
-        {nombre}
-      </h3>
+    <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6 flex items-start justify-between">
+      
+      {/* Información del contacto */}
+      <div className="space-y-1">
+        
+        {/* Nombre */}
+        <h3 className="text-xl font-semibold text-gray-800">
+          {nombre}
+        </h3>
 
-      <p className="text-gray-600">📞 {telefono}</p>
-      <p className="text-gray-600">✉️ {correo}</p>
-
-      {etiqueta && (
-        <p className="text-sm text-morado font-medium">
-          {etiqueta}
+        {/* Teléfono */}
+        <p className="text-gray-600 text-sm flex items-center gap-2">
+          <span className="text-purple-500 text-lg">📞</span>
+          {telefono}
         </p>
-      )}
 
-      <div className="mt-3">
-        <button
-          className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md"
-          onClick={() => onEliminar(correo)}
-        >
-          Eliminar
-        </button>
+        {/* Correo */}
+        <p className="text-gray-600 text-sm flex items-center gap-2">
+          <span className="text-purple-500 text-lg">✉️</span>
+          {correo}
+        </p>
+
+        {/* Etiqueta (si existe) */}
+        {etiqueta && (
+          <span className="inline-block bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full mt-2">
+            {etiqueta}
+          </span>
+        )}
       </div>
-    </article>
+
+      {/* Botón de eliminar */}
+      <button
+        onClick={onEliminar}
+        className="bg-red-500 hover:bg-red-600 text-white text-sm px-4 py-2 rounded-lg shadow transition"
+      >
+        Eliminar
+      </button>
+    </div>
   );
 }
