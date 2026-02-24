@@ -6,16 +6,23 @@ export default function ContactoCard({
   onEliminar
 }) {
   return (
-    <article className="tarjeta-contacto">
-      <h3>{nombre}</h3>
-      <p>📞 {telefono}</p>
-      <p>✉️ {correo}</p>
+    <article className="bg-white border rounded-lg shadow-sm p-4 mb-4">
+      <h3 className="text-lg font-semibold text-morado-oscuro">
+        {nombre}
+      </h3>
 
-      {etiqueta && <p className="etiqueta">{etiqueta}</p>}
+      <p className="text-gray-600">📞 {telefono}</p>
+      <p className="text-gray-600">✉️ {correo}</p>
 
-      <div className="acciones">
+      {etiqueta && (
+        <p className="text-sm text-morado font-medium">
+          {etiqueta}
+        </p>
+      )}
+
+      <div className="mt-3">
         <button
-          className="btn-eliminar"
+          className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md"
           onClick={() => onEliminar(correo)}
         >
           Eliminar
@@ -24,5 +31,3 @@ export default function ContactoCard({
     </article>
   );
 }
-
-
