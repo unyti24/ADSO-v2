@@ -6,6 +6,7 @@ export default function ContactoCard({
   telefono,
   correo,
   etiqueta,
+  empresa,
   onEliminar,
 }) {
   return (
@@ -30,6 +31,14 @@ export default function ContactoCard({
           <span className="text-purple-500 text-lg">✉️</span>
           {correo}
         </p>
+
+        {/* Empresa (si existe) */}
+        {empresa && (
+          <p className="text-gray-600 text-sm flex items-center gap-2">
+            <span className="text-purple-500 text-lg">🏢</span>
+            {empresa}
+          </p>
+        )}
 
         {/* Etiqueta (si existe) */}
         {etiqueta && (

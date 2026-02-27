@@ -1,77 +1,220 @@
-import { useState } from "react";
+// Importamos React y el hook useState para manejar estados locales del componente
+import { useState, useRef, useEffect } from "react";
 
-export default function FormularioContacto({ onAgregar }) {
-  // Estado del formulario como objeto único controlado
+// Componente FormularioContacto
+// Recibe como props la función onAgregar (para crear un contacto)
+function FormularioContacto({ onAgregar }) {
+
+  // Estado principal del formulario: almacena los valores de cada campo
   const [form, setForm] = useState({
     nombre: "",
     telefono: "",
     correo: "",
     etiqueta: "",
+    empresa: "",
   });
 
-  // onChange genérico: actualiza el campo según "name"
+  // Estado para almacenar los mensajes de error de validación por cada campo
+  const [errores, setErrores] = useState({
+    nombre: "",
+    telefono: "",
+    correo: "",
+  });
+
+  const [mensajeExito, setMensajeExito] = useState("");
+  const mensajeTimeout = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (mensajeTimeout.current) {
+        clearTimeout(mensajeTimeout.current);
+        mensajeTimeout.current = null;
+      }
+    };
+  }, []);
+
+  // Estado que indica si el formulario está enviando la información al servidor
+  // Sirve para desactivar el botón y mostrar un texto diferente
+  const [enviando, setEnviando] = useState(false);
+
+  // Función manejadora del cambio de los inputs
+  // Se ejecuta cada vez que el usuario escribe en un campo
   const onChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    // Extraemos el nombre y el valor del input que disparó el evento
+    const { name, value } = e.target;
+
+    // Actualizamos el estado del formulario manteniendo lo anterior
+    setForm((prevForm) => ({
+      ...prevForm,
+      [name]: value,
+    }));
   };
 
-  // onSubmit: valida mínimos y llama al padre
-  const onSubmit = (e) => {
-    e.preventDefault(); // Evita recarga de la página
+  // Función encargada de validar todos los campos del formulario
+  // Devuelve true si el formulario es válido, y false en caso contrario
+  function validarFormulario() {
 
-    // Validación mínima: 3 campos obligatorios
-    if (!form.nombre || !form.telefono || !form.correo) return;
-
-    // Llamamos la función del padre para crear
-    onAgregar(form);
-
-    // Reseteamos el formulario
-    setForm({
+    // Creamos un objeto temporal para ir llenando los mensajes de error
+    const nuevosErrores = {
       nombre: "",
       telefono: "",
       correo: "",
-      etiqueta: "",
-    });
+    };
+
+    // Validación del campo nombre
+    // .trim() elimina espacios en blanco al inicio y al final
+    if (!form.nombre.trim()) {
+      nuevosErrores.nombre = "El nombre es obligatorio.";
+    }
+
+    // Validación del campo teléfono
+    if (!form.telefono.trim()) {
+      nuevosErrores.telefono = "El teléfono es obligatorio.";
+    }
+
+    // Validación del campo correo
+    if (!form.correo.trim()) {
+      nuevosErrores.correo = "El correo es obligatorio.";
+    } else if (!form.correo.includes("@")) {
+      nuevosErrores.correo = "El correo debe contener @.";
+    }
+
+    // Actualizamos el estado de errores
+    setErrores(nuevosErrores);
+
+    // Retornamos true SOLO si no hay errores
+    return (
+      !nuevosErrores.nombre &&
+      !nuevosErrores.telefono &&
+      !nuevosErrores.correo
+    );
+  }
+
+  // Función manejadora del envío del formulario
+  // Es async porque puede llamar a la API
+  const onSubmit = async (e) => {
+
+    // Evitamos que el formulario recargue la página
+    e.preventDefault();
+
+    // Ejecutamos la validación
+    const esValido = validarFormulario();
+    if (!esValido) return;
+
+    try {
+      // Activamos el estado enviando
+      setEnviando(true);
+
+      // Llamamos a la función que guarda el contacto y obtener el creado
+      const creado = await onAgregar(form);
+
+      // Mostrar mensaje de éxito temporal y guardar timeout para poder cancelarlo
+      const nombreMostrado = (creado && creado.nombre) || form.nombre || "";
+      setMensajeExito(`Contacto ${nombreMostrado} guardado correctamente.`);
+      if (mensajeTimeout.current) clearTimeout(mensajeTimeout.current);
+      mensajeTimeout.current = setTimeout(() => {
+        setMensajeExito("");
+        mensajeTimeout.current = null;
+      }, 3000);
+
+      // Limpiamos los campos del formulario
+      setForm({
+        nombre: "",
+        telefono: "",
+        correo: "",
+        etiqueta: "",
+        empresa: "",
+      });
+
+      // Limpiamos los errores
+      setErrores({
+        nombre: "",
+        telefono: "",
+        correo: "",
+      });
+
+    } catch (err) {
+      // Si onAgregar lanza, podemos mostrarlo en consola (App maneja error global)
+      console.error(err);
+      throw err;
+    } finally {
+      // Apagamos el estado enviando
+      setEnviando(false);
+    }
+  };
+
+  const dismissMensaje = () => {
+    if (mensajeTimeout.current) {
+      clearTimeout(mensajeTimeout.current);
+      mensajeTimeout.current = null;
+    }
+    setMensajeExito("");
   };
 
   return (
-    <form onSubmit={onSubmit} className="space-y-6">
-      {/* Grid: 1 columna en móvil, 2 en pantallas medianas+ */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Campo: Nombre */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Nombre *
-          </label>
+    <form
+      className="bg-white shadow-sm rounded-2xl p-6 space-y-4 mb-8"
+      onSubmit={onSubmit}
+    >
+      {/* Título */}
+      <h2 className="text-lg font-semibold text-gray-900 mb-2">
+        Nuevo contacto
+      </h2>
 
-          <input
-            className="w-full rounded-xl border-gray-300 focus:ring-purple-500 focus:border-purple-500"
-            name="nombre"
-            placeholder="Ej: Camila Pérez"
-            value={form.nombre}
-            onChange={onChange}
-          />
+      {/* Alerta de éxito */}
+      {mensajeExito && (
+        <div id="alerta-exito" className="rounded-xl bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700" role="status" aria-live="polite">
+          <div className="flex items-center justify-between">
+            <span>{mensajeExito}</span>
+            <button onClick={dismissMensaje} className="ml-4 text-green-800 font-semibold">OK</button>
+          </div>
         </div>
+      )}
 
-        {/* Campo: Teléfono */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Teléfono *
-          </label>
+      {/* Campo Nombre */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Nombre *
+        </label>
 
-          <input
-            className="w-full rounded-xl border-gray-300 focus:ring-purple-500 focus:border-purple-500"
-            name="telefono"
-            placeholder="Ej: 300 123 4567"
-            value={form.telefono}
-            onChange={onChange}
-          />
-        </div>
+        <input
+          className="w-full rounded-xl border-gray-300 focus:ring-purple-500 focus:border-purple-500"
+          name="nombre"
+          placeholder="Ej: Camila Pérez"
+          value={form.nombre}
+          onChange={onChange}
+        />
+
+        {/* Mostramos mensaje de error si existe */}
+        {errores.nombre && (
+          <p className="mt-1 text-xs text-red-600">
+            {errores.nombre}
+          </p>
+        )}
       </div>
 
-      {/* Campo: Correo */}
+      {/* Campo Teléfono */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Teléfono *
+        </label>
+
+        <input
+          className="w-full rounded-xl border-gray-300 focus:ring-purple-500 focus:border-purple-500"
+          name="telefono"
+          placeholder="Ej: 300 123 4567"
+          value={form.telefono}
+          onChange={onChange}
+        />
+
+        {errores.telefono && (
+          <p className="mt-1 text-xs text-red-600">
+            {errores.telefono}
+          </p>
+        )}
+      </div>
+
+      {/* Campo Correo */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Correo *
@@ -84,9 +227,30 @@ export default function FormularioContacto({ onAgregar }) {
           value={form.correo}
           onChange={onChange}
         />
+
+        {errores.correo && (
+          <p className="mt-1 text-xs text-red-600">
+            {errores.correo}
+          </p>
+        )}
       </div>
 
-      {/* Campo: Etiqueta opcional */}
+      {/* Campo Empresa (opcional) */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Empresa
+        </label>
+
+        <input
+          className="w-full rounded-xl border-gray-300 focus:ring-purple-500 focus:border-purple-500"
+          name="empresa"
+          placeholder="Ej: ACME S.A."
+          value={form.empresa}
+          onChange={onChange}
+        />
+      </div>
+
+      {/* Campo Etiqueta (opcional) */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Etiqueta (opcional)
@@ -101,13 +265,18 @@ export default function FormularioContacto({ onAgregar }) {
         />
       </div>
 
-      {/* Botón principal */}
-      <button
-        className="w-full md:w-auto bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl font-semibold shadow-sm"
-      >
-        Agregar contacto
-      </button>
+      {/* Botón */}
+      <div className="pt-2">
+        <button
+          type="submit"
+          disabled={enviando}
+          className="w-full md:w-auto bg-purple-600 hover:bg-purple-700 disabled:bg-purple-300 disabled:cursor-not-allowed text-white px-6 py-3 rounded-xl font-semibold shadow-sm"
+        >
+          {enviando ? "Guardando..." : "Agregar contacto"}
+        </button>
+      </div>
     </form>
   );
 }
 
+export default FormularioContacto;
