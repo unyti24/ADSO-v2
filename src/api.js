@@ -1,52 +1,107 @@
-// Punto base de la API local (ajusta el puerto si usas otro)
-const API = "http://localhost:3002/contactos";
+// // Punto base de la API local (ajusta el puerto si usas otro)
+// const API = "http://localhost:3002/contactos";
 
-// GET: listar contactos
+// // GET: listar contactos
+// export async function listarContactos() {
+//   // Hacemos un GET a /contactos
+//   const res = await fetch(API);
+
+//   // Si la respuesta no es OK (>=400), lanzamos error
+//   if (!res.ok) {
+//     throw new Error("Error al listar contactos");
+//   }
+
+//   // Parseamos JSON y lo retornamos (array de contactos)
+//   return res.json();
+// }
+
+// // POST: crear contacto
+// export async function crearContacto(data) {
+//   // Hacemos un POST a /contactos con body en JSON
+//   const res = await fetch(API, {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json", // Indicamos JSON
+//     },
+//     body: JSON.stringify(data), // Enviamos el objeto del formulario
+//   });
+
+//   // Validamos respuesta
+//   if (!res.ok) {
+//     throw new Error("Error al crear el contacto");
+//   }
+
+//   // Devolvemos el contacto creado que regresa la API (con id)
+//   return res.json();
+// }
+
+// // DELETE: eliminar contacto por id
+// export async function eliminarContactoPorId(id) {
+//   // Hacemos un DELETE a /contactos/:id
+//   const res = await fetch(`${API}/${id}`, {
+//     method: "DELETE",
+//   });
+
+//   // Validamos respuesta
+//   if (!res.ok) {
+//     throw new Error("Error al eliminar el contacto");
+//   }
+
+//   // Devolvemos true indicando éxito
+//   return true;
+// }
+// Archivo: src/api.js
+// Capa de acceso a datos (conexión con la API REST).
+
+// Importamos la URL base desde config.js
+import { API_BASE_URL } from "./config";
+
+// ------------------------------------------------------
+// GET - Listar contactos
+// ------------------------------------------------------
 export async function listarContactos() {
-  // Hacemos un GET a /contactos
-  const res = await fetch(API);
+  // Realizamos petición GET
+  const res = await fetch(API_BASE_URL);
 
-  // Si la respuesta no es OK (>=400), lanzamos error
+  // Validamos respuesta
   if (!res.ok) {
     throw new Error("Error al listar contactos");
   }
 
-  // Parseamos JSON y lo retornamos (array de contactos)
+  // Convertimos la respuesta a JSON
   return res.json();
 }
 
-// POST: crear contacto
+// ------------------------------------------------------
+// POST - Crear contacto
+// ------------------------------------------------------
 export async function crearContacto(data) {
-  // Hacemos un POST a /contactos con body en JSON
-  const res = await fetch(API, {
+  const res = await fetch(API_BASE_URL, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json", // Indicamos JSON
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify(data), // Enviamos el objeto del formulario
+    body: JSON.stringify(data),
   });
 
-  // Validamos respuesta
   if (!res.ok) {
     throw new Error("Error al crear el contacto");
   }
 
-  // Devolvemos el contacto creado que regresa la API (con id)
   return res.json();
 }
 
-// DELETE: eliminar contacto por id
+// ------------------------------------------------------
+// DELETE - Eliminar contacto por ID
+// ------------------------------------------------------
 export async function eliminarContactoPorId(id) {
-  // Hacemos un DELETE a /contactos/:id
-  const res = await fetch(`${API}/${id}`, {
+  const res = await fetch(`${API_BASE_URL}/${id}`, {
     method: "DELETE",
   });
 
-  // Validamos respuesta
   if (!res.ok) {
     throw new Error("Error al eliminar el contacto");
   }
 
-  // Devolvemos true indicando éxito
   return true;
 }

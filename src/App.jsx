@@ -1,3 +1,5 @@
+
+
 // Importamos useEffect y useState para manejar estados y efectos
 import { useEffect, useState } from "react";
 
@@ -12,7 +14,7 @@ import Swal from "sweetalert2";
 
 // Importamos los componentes hijos
 import FormularioContacto from "./components/FormularioContacto";
-import ContactoCard from "./components/contactoCard";
+import ContactoCard from "./components/ContactoCard";
 
 // Componente principal de la aplicación
 function App() {
