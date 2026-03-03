@@ -1,6 +1,6 @@
 // Este componente muestra un contacto individual.
 // Incluye nombre, teléfono, correo, etiqueta y el botón de eliminar.
-
+//
 export default function ContactoCard({
   nombre,
   telefono,
