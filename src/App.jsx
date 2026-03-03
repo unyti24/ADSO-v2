@@ -1,5 +1,3 @@
-
-
 // Importamos useEffect y useState para manejar estados y efectos
 import { useEffect, useState } from "react";
 
@@ -21,6 +19,12 @@ function App() {
 
   // Estado que almacena la lista de contactos obtenidos de la API
   const [contactos, setContactos] = useState([]);
+
+  // Estado para la búsqueda (texto ingresado por el usuario)
+  const [search, setSearch] = useState("");
+  
+  // Estado para el ordenamiento: 'asc' = A→Z, 'desc' = Z→A
+  const [sortOrder, setSortOrder] = useState("asc");
 
   // Estado que indica si estamos cargando información (por ejemplo, al iniciar)
   const [cargando, setCargando] = useState(true);
@@ -135,6 +139,27 @@ function App() {
     }
   };
 
+  // Filtramos los contactos usando el texto de búsqueda (case-insensitive)
+  const contactosFiltrados = contactos.filter((c) => {
+    if (!search) return true;
+    const termino = search.toLowerCase();
+    return (
+      String(c.nombre || "").toLowerCase().includes(termino) ||
+      String(c.telefono || "").toLowerCase().includes(termino) ||
+      String(c.correo || "").toLowerCase().includes(termino) ||
+      String(c.empresa || "").toLowerCase().includes(termino) ||
+      String(c.etiqueta || "").toLowerCase().includes(termino)
+    );
+  });
+
+  // Ordenamos los contactos filtrados según `sortOrder` (no mutamos el array original)
+  const contactosOrdenados = [...contactosFiltrados].sort((a, b) => {
+    const na = String(a.nombre || "");
+    const nb = String(b.nombre || "");
+    const cmp = na.localeCompare(nb, "es", { sensitivity: "base" });
+    return sortOrder === "asc" ? cmp : -cmp;
+  });
+
   // JSX que renderiza la aplicación
   return (
     <div className="min-h-screen bg-gray-50">
@@ -177,7 +202,28 @@ function App() {
             {/* Formulario para agregar nuevos contactos */}
             <FormularioContacto onAgregar={onAgregarContacto} />
 
-            {/* Sección de listado de contactos */}
+            {/* Input de búsqueda y selector de orden */}
+            <div className="mb-4 flex flex-col md:flex-row md:items-center md:gap-4">
+              <input
+                aria-label="Buscar contactos"
+                placeholder="Buscar por nombre, teléfono, correo, empresa o etiqueta"
+                className="flex-1 rounded-xl border-gray-300 focus:ring-purple-500 focus:border-purple-500 px-4 py-2"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+
+              <select
+                aria-label="Ordenar contactos"
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value)}
+                className="mt-2 md:mt-0 rounded-xl border-gray-300 px-3 py-2 bg-white"
+              >
+                <option value="asc">A → Z</option>
+                <option value="desc">Z → A</option>
+              </select>
+            </div>
+
+            {/* Sección de listado de contactos (con filtrado) */}
             <section className="space-y-4">
               {contactos.length === 0 ? (
                 // Mensaje si no hay contactos
@@ -185,9 +231,14 @@ function App() {
                   Aún no tienes contactos registrados.
                   Agrega el primero usando el formulario superior.
                 </p>
+              ) : contactosFiltrados.length === 0 ? (
+                // Mensaje si la búsqueda no arroja resultados
+                <p className="text-sm text-gray-500">
+                  No se encontraron contactos que coincidan con "{search}".
+                </p>
               ) : (
-                // Recorremos la lista y mostramos una tarjeta por cada contacto
-                contactos.map((c) => (
+                // Recorremos la lista ordenada y mostramos una tarjeta por cada contacto
+                contactosOrdenados.map((c) => (
                   <ContactoCard
                     key={c.id}
                     nombre={c.nombre}
