@@ -1,60 +1,60 @@
-// Este componente muestra un contacto individual.
-// Incluye nombre, teléfono, correo, etiqueta y el botón de eliminar.
-//
 export default function ContactoCard({
   nombre,
   telefono,
   correo,
-  etiqueta,
   empresa,
+  etiqueta,
   onEliminar,
+  onActualizar
 }) {
   return (
-    <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6 flex items-start justify-between">
-      
-      {/* Información del contacto */}
-      <div className="space-y-1">
-        
-        {/* Nombre */}
-        <h3 className="text-xl font-semibold text-gray-800">
+
+    <div className="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition flex justify-between">
+
+      <div className="p-6 flex-1 space-y-2">
+
+        <h3 className="text-lg font-semibold text-gray-800">
           {nombre}
         </h3>
 
-        {/* Teléfono */}
-        <p className="text-gray-600 text-sm flex items-center gap-2">
-          <span className="text-purple-500 text-lg">📞</span>
+        <p className="text-gray-600 text-sm">
           {telefono}
         </p>
 
-        {/* Correo */}
-        <p className="text-gray-600 text-sm flex items-center gap-2">
-          <span className="text-purple-500 text-lg">✉️</span>
+        <p className="text-gray-600 text-sm">
           {correo}
         </p>
 
-        {/* Empresa (si existe) */}
-        {empresa && (
-          <p className="text-gray-600 text-sm flex items-center gap-2">
-            <span className="text-purple-500 text-lg">🏢</span>
-            {empresa}
-          </p>
-        )}
+        <p className="text-gray-600 text-sm">
+          {empresa}
+        </p>
 
-        {/* Etiqueta (si existe) */}
         {etiqueta && (
-          <span className="inline-block bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full mt-2">
+          <span className="inline-block bg-purple-50 text-purple-600 text-sm px-3 py-1 rounded-full">
             {etiqueta}
           </span>
         )}
+
       </div>
 
-      {/* Botón de eliminar */}
-      <button
-        onClick={onEliminar}
-        className="bg-red-500 hover:bg-red-600 text-white text-sm px-4 py-2 rounded-lg shadow transition"
-      >
-        Eliminar
-      </button>
+      <div className="w-40 border-l p-4 flex flex-col gap-3">
+
+        <button
+          onClick={onActualizar}
+          className="bg-emerald-500 hover:bg-emerald-600 text-white py-2 rounded-xl"
+        >
+          Actualizar
+        </button>
+
+        <button
+          onClick={onEliminar}
+          className="bg-red-500 hover:bg-red-600 text-white py-2 rounded-xl"
+        >
+          Eliminar
+        </button>
+
+      </div>
+
     </div>
   );
 }

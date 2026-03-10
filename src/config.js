@@ -7,7 +7,7 @@
 // ------------------------------------------------------
 // Si el puerto del JSON Server cambia,
 // solo debemos modificar esta línea.
-export const API_BASE_URL = "http://localhost:3002/contactos";
+export const API_BASE_URL = "http://localhost:3001/contactos";
 
 // ------------------------------------------------------
 // INFORMACIÓN GENERAL DE LA APLICACIÓN

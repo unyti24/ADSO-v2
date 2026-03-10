@@ -3,7 +3,8 @@ import { useState, useRef, useEffect } from "react";
 
 // Componente FormularioContacto
 // Recibe como props la función onAgregar (para crear un contacto)
-function FormularioContacto({ onAgregar }) {
+// Recibe como props la función para crear el contacto: `onAgregar` o `onCrear`
+function FormularioContacto({ onAgregar, onCrear, onActualizar, contactoEnEdicion, onCancelarEdicion }) {
 
   // Estado principal del formulario: almacena los valores de cada campo
   const [form, setForm] = useState({
@@ -33,6 +34,19 @@ function FormularioContacto({ onAgregar }) {
     };
   }, []);
 
+  // Si se pasa un contacto para editar, precargar el formulario
+  useEffect(() => {
+    if (contactoEnEdicion) {
+      setForm({
+        nombre: contactoEnEdicion.nombre || "",
+        telefono: contactoEnEdicion.telefono || "",
+        correo: contactoEnEdicion.correo || "",
+        etiqueta: contactoEnEdicion.etiqueta || "",
+        empresa: contactoEnEdicion.empresa || "",
+      });
+    }
+  }, [contactoEnEdicion]);
+
   // Estado que indica si el formulario está enviando la información al servidor
   // Sirve para desactivar el botón y mostrar un texto diferente
   const [enviando, setEnviando] = useState(false);
@@ -41,7 +55,14 @@ function FormularioContacto({ onAgregar }) {
   // Se ejecuta cada vez que el usuario escribe en un campo
   const onChange = (e) => {
     // Extraemos el nombre y el valor del input que disparó el evento
-    const { name, value } = e.target;
+    const { name } = e.target;
+    let { value } = e.target;
+
+    // Sanitizar entrada para el campo teléfono: permitir solo dígitos y símbolos comunes
+    if (name === "telefono") {
+      // Permitimos números, espacios, +, -, y paréntesis
+      value = String(value).replace(/[^0-9+\-\s()]/g, "");
+    }
 
     // Actualizamos el estado del formulario manteniendo lo anterior
     setForm((prevForm) => ({
@@ -105,8 +126,17 @@ function FormularioContacto({ onAgregar }) {
       // Activamos el estado enviando
       setEnviando(true);
 
-      // Llamamos a la función que guarda el contacto y obtener el creado
-      const creado = await onAgregar(form);
+      // Si estamos editando, llamamos a onActualizar
+      let creado = null;
+      if (contactoEnEdicion && onActualizar) {
+        const payload = { id: contactoEnEdicion.id, ...form };
+        creado = await onActualizar(payload);
+        // Si existe callback para cancelar edición, llamarlo
+        if (onCancelarEdicion) onCancelarEdicion();
+      } else {
+        const crearFn = onAgregar || onCrear;
+        creado = await crearFn(form);
+      }
 
       // Mostrar mensaje de éxito temporal y guardar timeout para poder cancelarlo
       const nombreMostrado = (creado && creado.nombre) || form.nombre || "";
@@ -134,9 +164,9 @@ function FormularioContacto({ onAgregar }) {
       });
 
     } catch (err) {
-      // Si onAgregar lanza, podemos mostrarlo en consola (App maneja error global)
+      // Si onAgregar lanza, lo registramos en consola; no relanzamos
+      // para evitar errores no capturados en la UI
       console.error(err);
-      throw err;
     } finally {
       // Apagamos el estado enviando
       setEnviando(false);
@@ -158,7 +188,7 @@ function FormularioContacto({ onAgregar }) {
     >
       {/* Título */}
       <h2 className="text-lg font-semibold text-gray-900 mb-2">
-        Nuevo contacto
+        {contactoEnEdicion ? "Editar contacto" : "Nuevo contacto"}
       </h2>
 
       {/* Alerta de éxito */}
@@ -200,6 +230,9 @@ function FormularioContacto({ onAgregar }) {
         </label>
 
         <input
+          type="tel"
+          inputMode="numeric"
+          pattern="[0-9+\-\s()]*"
           className="w-full rounded-xl border-gray-300 focus:ring-purple-500 focus:border-purple-500"
           name="telefono"
           placeholder="Ej: 300 123 4567"
@@ -272,7 +305,7 @@ function FormularioContacto({ onAgregar }) {
           disabled={enviando}
           className="w-full md:w-auto bg-purple-600 hover:bg-purple-700 disabled:bg-purple-300 disabled:cursor-not-allowed text-white px-6 py-3 rounded-xl font-semibold shadow-sm"
         >
-          {enviando ? "Guardando..." : "Agregar contacto"}
+          {enviando ? "Guardando..." : contactoEnEdicion ? "Guardar cambios" : "Agregar contacto"}
         </button>
       </div>
     </form>
