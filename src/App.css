@@ -1,0 +1,175 @@
+/* ============================= */
+/* 🎨 VARIABLES DE DISEÑO */
+/* ============================= */
+:root {
+  --morado: #7c3aed;
+  --morado-oscuro: #5b21b6;
+  --gris: #374151;
+  --gris-suave: #6b7280;
+  --borde: #e5e7eb;
+  --error: #dc2626;
+  --radio: 12px;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* ============================= */
+/* 🌍 BASE */
+/* ============================= */
+body {
+  background: #f9fafb;
+  font-family: "Inter", Arial, sans-serif;
+  margin: 0;
+  color: var(--gris);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================= */
+/* 📦 CONTENEDOR */
+/* ============================= */
+.app-container {
+  max-width: 700px;
+  margin: 2.5rem auto;
+  padding: 0 1rem;
+}
+
+/* ============================= */
+/* 🏷️ TÍTULOS */
+/* ============================= */
+.app-title {
+  text-align: center;
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: var(--morado);
+  margin: 0.3rem 0;
+}
+
+.subtitulo {
+  text-align: center;
+  font-size: 0.95rem;
+  color: var(--gris-suave);
+  margin-bottom: 1.5rem;
+}
+
+/* ============================= */
+/* 📝 FORMULARIO */
+/* ============================= */
+.form-contacto {
+  background: #fff;
+  padding: 1.5rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Labels */
+label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 0.3rem;
+}
+
+/* ============================= */
+/* ✏️ INPUTS PROFESIONALES */
+/* ============================= */
+input {
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--borde); /* borde suave */
+  border-radius: var(--radio);
+  font-size: 0.9rem;
+  background: #fff;
+  transition: all 0.2s ease;
+  outline: none; /* elimina borde negro feo */
+}
+
+/* Hover sutil */
+input:hover {
+  border-color: #c7d2fe;
+}
+
+/* Focus moderno */
+input:focus {
+  border-color: var(--morado);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+}
+
+/* Error */
+input.error {
+  border-color: var(--error);
+}
+
+/* ============================= */
+/* 🔘 BOTÓN PRINCIPAL */
+/* ============================= */
+.btn-primario {
+  background: var(--morado);
+  color: #fff;
+  padding: 0.75rem;
+  border: none;
+  border-radius: var(--radio);
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-primario:hover {
+  background: var(--morado-oscuro);
+  transform: translateY(-1px);
+}
+
+.btn-primario:active {
+  transform: scale(0.98);
+}
+
+/* ============================= */
+/* 🗂️ TARJETA CONTACTO */
+/* ============================= */
+.tarjeta-contacto {
+  background: #fff;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 1.2rem;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.9rem;
+  transition: transform 0.15s ease;
+}
+
+.tarjeta-contacto:hover {
+  transform: translateY(-2px);
+}
+
+.tarjeta-contacto h3 {
+  margin: 0;
+  font-weight: 600;
+  color: var(--morado-oscuro);
+}
+
+/* ============================= */
+/* ⚙️ ACCIONES */
+/* ============================= */
+.acciones {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.btn-eliminar {
+  background: var(--error);
+  color: #fff;
+  padding: 0.45rem 0.8rem;
+  border: none;
+  border-radius: var(--radio);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: 0.2s ease;
+}
+
+.btn-eliminar:hover {
+  filter: brightness(0.9);
+}

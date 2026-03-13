@@ -1,5 +1,5 @@
 // Importamos React y el hook useState para manejar estados locales del componente
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 // Componente FormularioContacto
 // Recibe como props la función onAgregar (para crear un contacto)
@@ -22,17 +22,7 @@ function FormularioContacto({ onAgregar, onCrear, onActualizar, contactoEnEdicio
     correo: "",
   });
 
-  const [mensajeExito, setMensajeExito] = useState("");
-  const mensajeTimeout = useRef(null);
 
-  useEffect(() => {
-    return () => {
-      if (mensajeTimeout.current) {
-        clearTimeout(mensajeTimeout.current);
-        mensajeTimeout.current = null;
-      }
-    };
-  }, []);
 
   // Si se pasa un contacto para editar, precargar el formulario
   useEffect(() => {
@@ -138,14 +128,8 @@ function FormularioContacto({ onAgregar, onCrear, onActualizar, contactoEnEdicio
         creado = await crearFn(form);
       }
 
-      // Mostrar mensaje de éxito temporal y guardar timeout para poder cancelarlo
-      const nombreMostrado = (creado && creado.nombre) || form.nombre || "";
-      setMensajeExito(`Contacto ${nombreMostrado} guardado correctamente.`);
-      if (mensajeTimeout.current) clearTimeout(mensajeTimeout.current);
-      mensajeTimeout.current = setTimeout(() => {
-        setMensajeExito("");
-        mensajeTimeout.current = null;
-      }, 3000);
+      // El componente padre (App) muestra el mensaje de éxito global,
+      // aquí solo limpiamos el formulario después de crear/editar.
 
       // Limpiamos los campos del formulario
       setForm({
@@ -173,13 +157,7 @@ function FormularioContacto({ onAgregar, onCrear, onActualizar, contactoEnEdicio
     }
   };
 
-  const dismissMensaje = () => {
-    if (mensajeTimeout.current) {
-      clearTimeout(mensajeTimeout.current);
-      mensajeTimeout.current = null;
-    }
-    setMensajeExito("");
-  };
+
 
   return (
     <form
@@ -192,14 +170,7 @@ function FormularioContacto({ onAgregar, onCrear, onActualizar, contactoEnEdicio
       </h2>
 
       {/* Alerta de éxito */}
-      {mensajeExito && (
-        <div id="alerta-exito" className="rounded-xl bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700" role="status" aria-live="polite">
-          <div className="flex items-center justify-between">
-            <span>{mensajeExito}</span>
-            <button onClick={dismissMensaje} className="ml-4 text-green-800 font-semibold">OK</button>
-          </div>
-        </div>
-      )}
+      {/* El mensaje de éxito lo maneja el componente padre `App` para evitar duplicados */}
 
       {/* Campo Nombre */}
       <div>

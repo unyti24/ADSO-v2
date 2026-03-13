@@ -15,6 +15,22 @@
       "correo": "daddy@gmail.com",
       "etiqueta": "cantante",
       "empresa": "kings"
+    },
+    {
+      "id": "2f32",
+      "nombre": "noriel",
+      "telefono": "3222242343",
+      "correo": "noriel@gmail",
+      "etiqueta": "cantante",
+      "empresa": "bilboards"
+    },
+    {
+      "id": "18f3",
+      "nombre": "anuel",
+      "telefono": "3243224432",
+      "correo": "anuel@gmail.com",
+      "etiqueta": "cantante",
+      "empresa": "big board"
     }
   ]
 }
